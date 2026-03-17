@@ -476,36 +476,63 @@ def analiz_et(deger, ref_alt, ref_ust, param_adi):
 
 def pdf_oku(file):
     sonuclar = []
+    
     with pdfplumber.open(file) as pdf:
-        full_text = ""
+        lines = []
         for page in pdf.pages:
-            full_text += (page.extract_text() or "") + "\n"
-        full_text = re.sub(r'[ \t]+', ' ', full_text)
-        
-        for p_key in TAHLIL_AYARLARI.keys():
-            p_pattern = re.escape(p_key)
-            pattern = rf"{p_pattern}[^0-9,.]*([\d\.,]+).*?([\d\.,]+)\s*-\s*([\d\.,]+)"
-            match = re.search(pattern, full_text, re.IGNORECASE | re.DOTALL)
-            if match:
-                try:
-                    raw_res = match.group(1).replace(',', '.')
-                    raw_low = match.group(2).replace(',', '.')
-                    raw_high = match.group(3).replace(',', '.')
-                    sonuc_val = float(raw_res)
-                    ref_min = float(raw_low)
-                    ref_max = float(raw_high)
-                    durum, mesaj, bilgi = analiz_et(sonuc_val, ref_min, ref_max, p_key)
-                    sonuclar.append({
-                        "ad": p_key, 
-                        "sonuc": sonuc_val, 
-                        "ref": f"{ref_min} - {ref_max}",
-                        "durum": durum, 
-                        "mesaj": mesaj, 
-                        "bilgi": bilgi,
-                        "grup": TAHLIL_AYARLARI[p_key]["grup"]
-                    })
-                except (ValueError, IndexError):
-                    continue
+            text = page.extract_text() or ""
+            lines.extend(text.split("\n"))
+
+    # boşluk temizliği
+    lines = [re.sub(r'\s+', ' ', l).strip() for l in lines if l.strip()]
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # Parametre var mı?
+        parametreler = sorted(TAHLIL_AYARLARI.keys(), key=len, reverse=True)
+        for p_key in parametreler:
+            if re.search(rf"\b{re.escape(p_key)}\b", line, re.IGNORECASE):
+                
+                combined = line
+
+                # sonraki 2-3 satırı ekle (PDF kaymalarına karşı)
+                for j in range(1, 4):
+                    if i + j < len(lines):
+                        combined += " " + lines[i + j]
+
+                # bölünmüş parametreleri düzelt
+                combined = re.sub(r'(\w)-\s+(\w)', r'\1-\2', combined)
+
+                # sayıları çek
+                match = re.search(r'([\d\.,]+).*?([\d\.,]+)\s*-\s*([\d\.,]+)', combined)
+
+                if match:
+                    try:
+                        sonuc_val = float(match.group(1).replace(',', '.'))
+                        ref_min = float(match.group(2).replace(',', '.'))
+                        ref_max = float(match.group(3).replace(',', '.'))
+
+                        durum, mesaj, bilgi = analiz_et(sonuc_val, ref_min, ref_max, p_key)
+
+                        sonuclar.append({
+                            "ad": p_key,
+                            "sonuc": sonuc_val,
+                            "ref": f"{ref_min} - {ref_max}",
+                            "durum": durum,
+                            "mesaj": mesaj,
+                            "bilgi": bilgi,
+                            "grup": TAHLIL_AYARLARI[p_key]["grup"]
+                        })
+
+                        break  # aynı satırda tekrar arama
+
+                    except:
+                        pass
+
+        i += 1
+
     return sonuclar
 
 # --- 4. ARAYÜZ (STREAMLIT) ---
@@ -568,13 +595,18 @@ if yuklenen_dosya:
         st.subheader("Toplu Risk Analizi")
         herhangi_bir_kombinasyon_var_mi = False
         for kural in KOMBINASYON_KURALLARI:
-            eslesenler = [p for p, d in kural["kosullar"].items() if durum_sozlugu.get(p) == d]
-            toplam = len(kural["kosullar"])
+            mevcutlar = {p: d for p, d in kural["kosullar"].items() if p in durum_sozlugu}
+
+            if len(mevcutlar) == 0:
+                continue
+
+            eslesenler = [p for p, d in mevcutlar.items() if durum_sozlugu.get(p) == d]
+            toplam = len(mevcutlar)
+
             if len(eslesenler) == toplam:
                 st.error(f"🔴 **{kural['ad']}**: {kural['tam_uyum']}")
-                herhangi_bir_kombinasyon_var_mi = True
             elif len(eslesenler) / toplam >= 0.5:
-                st.warning(f"🟡 **{kural['ad']} (Kısmi Uyum)**: {kural['kismi_uyum']} (Riskli Parametreler: {', '.join(eslesenler)})")
+                st.warning(f"🟡 **{kural['ad']} (Kısmi Uyum)**: {kural['kismi_uyum']} (Riskli Parametreler: {', '.join(eslesenler)})")    
                 herhangi_bir_kombinasyon_var_mi = True
         
         if not herhangi_bir_kombinasyon_var_mi:
