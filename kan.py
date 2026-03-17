@@ -423,12 +423,6 @@ KOMBINASYON_KURALLARI = [
         "kismi_uyum": "⚠️ Bazı değerlerinizde dengesizlik görülmektedir. Bu bulgular, vücudunuzun bir alerjene tepki verdiği veya alerjik bir durum eğilimi içerisinde olduğu şeklinde yorumlanabilir. Belirtilerinizin takibi ve kesin teşhis için en kısa sürede bir İç Hastalıkları (Dahiliye) veya Enfeksiyon Hastalıkları uzmanına başvurmanız önerilir."
     },
     {
-        "ad": "Fiziksel Veya Psikolojik Stres Eğilimi",
-        "kosullar": {"NE#": "Yüksek", "NE": "Yüksek", "NE%": "Yüksek", "LY#": "Düşük", "LYM#": "Düşük", "LY%": "Düşük", "LYM%": "Düşük", "WBC": "Yüksek"},
-        "tam_uyum": "🚨 Kan tablonuzdaki verilerin tamamı birbiriyle örtüşmektedir. Bu tablo, vücudunuzun yüksek düzeyde fiziksel veya psikolojik bir stres altında olma olasılığının oldukça yüksek olduğuna işaret etmektedir. Bu durumun vücudunuzdaki etkilerini yönetmek ve altta yatan nedeni belirlemek için vakit kaybetmeden bir İç Hastalıkları (Dahiliye) veya Psikoloji uzmanına başvurmanız faydalı olacaktır.",
-        "kismi_uyum": "⚠️ Bazı değerlerinizde dengesizlik görülmektedir. Bu bulgular, vücudunuzun bir stres faktörüyle mücadele ettiği veya fiziksel/psikolojik bir stres eğilimi içerisinde olduğu şeklinde yorumlanabilir. Durumun takibi ve kesin değerlendirme için en kısa sürede bir İç Hastalıkları (Dahiliye) veya Psikoloji uzmanına başvurmanız önerilir."
-    },
-    {
         "ad": "Kansızlık (Anemi) Eğilimi",
         "kosullar": {"HGB": "Düşük", "HCT": "Düşük", "Hematokrit": "Düşük", "RBC": "Düşük", "MCH": "Düşük", "MCHC": "Düşük", "MCV": "Düşük", "RDW-CV": "Yüksek"},
         "tam_uyum": "🚨 Kan tablonuzdaki verilerin tamamı birbiriyle örtüşmektedir. Bu tablo, vücudunuzda kansızlık (anemi) olasılığının oldukça yüksek olduğuna işaret etmektedir. Kansızlığın tipinin belirlenmesi ve gerekli desteğin planlanması için vakit kaybetmeden bir İç Hastalıkları (Dahiliye) veya Hematoloji uzmanına başvurmanız faydalı olacaktır.",
