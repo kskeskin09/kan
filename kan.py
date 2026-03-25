@@ -2,7 +2,6 @@ import streamlit as st
 import pdfplumber
 import re
 
-# --- 1. VERİ YAPISI ---
 TAHLIL_AYARLARI = {
     "BA#": {
         "grup": "Hemogram (Tam Kan Sayımı)",
@@ -402,7 +401,6 @@ TAHLIL_AYARLARI = {
     }
 }
 
-# --- 2. KOMBİNASYON KURALLARI ---
 KOMBINASYON_KURALLARI = [
     {
         "ad": "Bakteriyel Enfeksiyon Eğiliimi",
@@ -466,7 +464,6 @@ KOMBINASYON_KURALLARI = [
     }
 ]
 
-# --- 3. FONKSİYONLAR ---
 def analiz_et(deger, ref_alt, ref_ust, param_adi):
     ayar = TAHLIL_AYARLARI.get(param_adi)
     if deger < ref_alt: durum = "Düşük"
@@ -508,7 +505,6 @@ def pdf_oku(file):
                     continue
     return sonuclar
 
-# --- 4. ARAYÜZ (STREAMLIT) ---
 st.set_page_config(page_title="SAnaliz Tahlil Analiz Sistemi", layout="wide")
 st.title("SAnaliz Akıllı Tahlil Okuma ve Analiz Sistemi")
 
@@ -537,12 +533,9 @@ if yuklenen_dosya:
                 if v['grup'] == grup:
                     c1, c2, c3, c4, c5 = st.columns([1.5, 1, 1.5, 1.2, 4])
                     
-                    # Hizalama için dikey boşluk miktarı
                     v_align = "padding-top:16px;"
                     
                     with c1:
-                        # Bilgi balonunu (help) geri getirdik
-                        # Boş bir div ile üstten boşluk verip altına normal markdown basıyoruz
                         st.markdown(f"<div style='padding-top:12px;'></div>", unsafe_allow_html=True)
                         st.markdown(f"**{v['ad']}**", help=v['bilgi'])
                         
@@ -563,7 +556,6 @@ if yuklenen_dosya:
 
             st.write("")
 
-        # --- RİSK ANALİZİ ---
         st.write("---")
         st.subheader("Toplu Risk Analizi")
         herhangi_bir_kombinasyon_var_mi = False
